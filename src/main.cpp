@@ -140,73 +140,16 @@ int main()
                             map_waypoints_x, map_waypoints_y,
                             map_waypoints_s);
 
-          // Create spline for car to follow based on the points(5 of them)
-        	tk::spline s;
-        	s.set_points(ptsx, ptsy);
-
           // Vector of co-ordinates for the car to follow
         	vector<double> next_x_vals;
         	vector<double> next_y_vals;
 
-          // Start from the previous path to allow for a smoother transition
-        	for(int i = 0; i < previous_path_x.size(); i++)
-        	{
-        		next_x_vals.push_back(previous_path_x[i]);
-        		next_y_vals.push_back(previous_path_y[i]);
-        	}
-
-          // Target 'x' position
-        	double target_x = 30.0;
-          // Get 'y' using the spline equation
-        	double target_y = s(target_x);
-
-          // Target distance to reach
-        	double target_dist = sqrt((target_x) * (target_x) + (target_y) * (target_y));
-        	double x_add_on = 0;
-
-          // Populate 50 points for the car to follow using the spline
-			    for (int i = 1; i <= 50 - previous_path_x.size(); i++)
-          {
-            // The car speed if below reference velocity
-    				if(car_speed < ref_vel)
-    				{
-    					car_speed+=.224;
-    				}
-            // Car speed is above reference velocity
-    				else if(car_speed > ref_vel)
-    				{
-    					car_speed-=.224;
-    				}
-
-            // Calculate the increments for 'x' based on the current speed
-            // and distance remaining
-            // NOTE: The car moves to next point every 0.02 seconds, so the
-            //       distances are calibrated for that time frame
-    				double N = (target_dist / (.02*car_speed / 2.24));
-            // New 'x' point
-    				double x_point = x_add_on + (target_x)/N;
-            // New 'y' point using the spline
-    				double y_point = s(x_point);
-
-            // Store reference point for next iteration
-    				x_add_on = x_point;
-
-            // For converting from car co-ordinates to global co-ordinates
-    				double x_ref = x_point;
-    				double y_ref = y_point;
-
-            // Global co-ordinates after conversion
-    				x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
-    				y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
-
-            // New global 'x' & 'y' points with increments added
-    				x_point += ref_x;
-    				y_point += ref_y;
-
-            // Add the points to the vector
-    				next_x_vals.push_back(x_point);
-    				next_y_vals.push_back(y_point);
-    			}
+          // Call function to create a trajectory for the car to follow
+          CreateSpline(ptsx, ptsy, next_x_vals, next_y_vals,
+                       previous_path_x, previous_path_y,
+                       ref_x, car_x, ref_y, car_y,
+                       ref_yaw, car_yaw,
+                       car_speed, ref_vel);
 
         	json msgJson;
         	msgJson["next_x"] = next_x_vals;
