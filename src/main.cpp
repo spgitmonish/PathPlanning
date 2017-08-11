@@ -276,9 +276,9 @@ int main()
             // Get the next way point using the ego car's (x, y, yaw)
         		next_wp = NextWaypoint(ref_x, ref_y, ref_yaw,
                                    map_waypoints_x, map_waypoints_y,
-                                   map_waypoints_dx,map_waypoints_dy);
+                                   map_waypoints_dx, map_waypoints_dy);
         	}
-          // Not the first time th path planner is running
+          // Not the first time the path planner is running
         	else
         	{
             // Get the last 'x' from the previous path
@@ -292,7 +292,7 @@ int main()
             // Get the last heading direction of the previous path
     				ref_yaw = atan2((ref_y-ref_y_prev), (ref_x - ref_x_prev));
 
-            // Get the next way point using the ego car's (x, y, yaw)
+            // Get the next way point using the ego car's previous (x, y, yaw)
     				next_wp = NextWaypoint(ref_x, ref_y, ref_yaw,
                                    map_waypoints_x, map_waypoints_y,
                                    map_waypoints_dx, map_waypoints_dy);
@@ -359,7 +359,9 @@ int main()
         		}
         	}
 
-        	// Try to change lanes ego car is too close to car in front
+        	// Try to change lanes ego car is too close to car in front(calculated above)
+          // NOTE: Make sure lane change is triggered only if there is a
+          //       difference of more than 2 way points
         	if(change_lanes && ((next_wp - lane_change_wp) % map_waypoints_x.size() > 2))
         	{
             // Flag to tracked changed lanes
@@ -442,7 +444,7 @@ int main()
 
                   // If the distance is less than the buffer of 20 then
                   // lane change is not safe
-        					if(dist_s < 20 && dist_s > -10)
+        					if(dist_s < 20 && dist_s > -20)
         					{
         						lane_safe = false;
         					}
