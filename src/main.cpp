@@ -410,7 +410,7 @@ int main()
         				changed_lanes = true;
                 // Change lane value
         				lane -= 1;
-                // Way points for lane change
+                // For lane change detection in the next iteration
         				lane_change_wp = next_wp;
         			}
         		}
@@ -457,7 +457,7 @@ int main()
         				changed_lanes = true;
                 // Change lane value
         				lane += 1;
-                // Way points for lane change
+                // For lane change detection in the next iteration
         				lane_change_wp = next_wp;
         			}
         		}
@@ -470,11 +470,11 @@ int main()
           // This is the first time the path planning algorithm is running
         	if(prev_size < 2)
         	{
-            // Get the car's previous 'x' & 'y'
+            // Get the car's previous 'x' & 'y' using the yaw
         		double prev_car_x = car_x - cos(car_yaw);
         		double prev_car_y = car_y - sin(car_yaw);
 
-            // Add the previous and the current car positions
+            // Add the previous and the current car positions to the vectors
         		ptsx.push_back(prev_car_x);
         		ptsx.push_back(car_x);
         		ptsy.push_back(prev_car_y);
@@ -483,14 +483,15 @@ int main()
           // Not the first time the car is running
         	else
         	{
-            // Add the previous 2 car positions
-        		ptsx.push_back(previous_path_x[prev_size-2]);
-        		ptsx.push_back(previous_path_x[prev_size-1]);
-        		ptsy.push_back(previous_path_y[prev_size-2]);
-        		ptsy.push_back(previous_path_y[prev_size-1]);
+            // Add the previous 2 car positions to the vectors
+        		ptsx.push_back(previous_path_x[prev_size - 2]);
+        		ptsx.push_back(previous_path_x[prev_size - 1]);
+        		ptsy.push_back(previous_path_y[prev_size - 2]);
+        		ptsy.push_back(previous_path_y[prev_size - 1]);
         	}
 
-          // Get next 3 way points using the car's current 's' and lane position('d') at the middle of the lane
+          // Get next 3 way points using the car's current 's' and
+          // current lane position('d' is at the middle, preferable & safe)
         	vector<double> next_wp0 = getXY(car_s+30, (2 + 4*lane),
                                           map_waypoints_s, map_waypoints_x, map_waypoints_y);
         	vector<double> next_wp1 = getXY(car_s+60, (2 + 4*lane),
@@ -507,6 +508,8 @@ int main()
         	ptsy.push_back(next_wp2[1]);
 
           // Shift car reference angle to 0 degrees
+          // NOTE: The heading angle is taken care off by the simulator based
+          //       on the path points generated
         	for (int i = 0; i < ptsx.size(); i++)
         	{
         		double shift_x = ptsx[i] - ref_x;
@@ -515,7 +518,7 @@ int main()
 				    ptsy[i] = ((shift_x * sin(0 - ref_yaw)) + (shift_y * cos(0 - ref_yaw)));
           }
 
-          // Create spline for car to follow based on the points generated(5)
+          // Create spline for car to follow based on the points(5 of them)
         	tk::spline s;
         	s.set_points(ptsx, ptsy);
 
@@ -553,14 +556,14 @@ int main()
     					car_speed-=.224;
     				}
 
-            // Calculate the increments for 'x' based on the speed
+            // Calculate the increments for 'x' based on the speed and distance
     				double N = (target_dist / (.02*car_speed / 2.24));
             // New 'x' point
     				double x_point = x_add_on + (target_x)/N;
             // New 'y' point using the spline
     				double y_point = s(x_point);
 
-            // Store for next iteration
+            // Store reference point for next iteration
     				x_add_on = x_point;
 
             // For converting from car co-ordinates to global co-ordinates
