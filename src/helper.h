@@ -203,7 +203,7 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 	return {x,y};
 }
 
-// Function returns true if lane change is possible from the current lane
+// Function returns true if lane change is needed from the current lane
 bool LaneChangePossible(const vector<vector<double>> sensor_fusion,
                         const int prev_size,
                         const int lane,
@@ -236,7 +236,7 @@ bool LaneChangePossible(const vector<vector<double>> sensor_fusion,
       // Car's 's' position based on the speed
       check_car_s += ((double)prev_size*.02 * check_speed);
 
-      // Check if 's' value of the car greater than the ego car
+      // Check if 's' value of the car is greater than the ego car
       // but less than 's' gap required(30)
       if((check_car_s > car_s) &&
          ((check_car_s - car_s) < 30) &&
@@ -250,17 +250,15 @@ bool LaneChangePossible(const vector<vector<double>> sensor_fusion,
         {
           // Match that cars speed
           ref_vel = check_speed * 2.237;
-
-          // Change lanes
-          change_lanes = true;
         }
         else
         {
-          // Go slightly slower than the cars speed(mph)
+          // Go slightly slower than the cars speed
           ref_vel = check_speed*2.237 - 5;
-          // Change lanes
-          change_lanes = true;
         }
+
+        // Change lanes since the ego car is getting too close
+        change_lanes = true;
       }
     }
   }
@@ -282,7 +280,7 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
   //       difference of more than 2 way points
   if(change_lanes && ((next_wp - lane_change_wp) % map_waypoints_x.size() > 2))
   {
-    // Flag to tracked changed lanes
+    // Flag to track changed lanes
     bool changed_lanes = false;
 
     // First try to change to left lane(if not in left lane already)
@@ -293,7 +291,7 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
 
       for(int i = 0; i < sensor_fusion.size(); i++)
       {
-        // Check for car in left lane
+        // Check for cars in left lane
         float d = sensor_fusion[i][6];
         if(d < (2 + 4*(lane - 1) + 2) && d > (2 + 4*(lane - 1) - 2))
         {
@@ -351,11 +349,11 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
           // Speed of the car
           double check_speed = sqrt(vx*vx + vy*vy);
 
-          // Current 's' position of the car
+          // Current 's' position of the car based on sensor data
           double check_car_s = sensor_fusion[i][5];
 
-          // Car's s position based on the speed
-          check_car_s+=((double)prev_size * .02 * check_speed);
+          // Car's s position based on the speed and size of the previous path
+          check_car_s += ((double)prev_size * .02 * check_speed);
 
           // Distance between the cars
           double dist_s = check_car_s - car_s;
@@ -441,7 +439,7 @@ void GenerateWayPoints(vector<double> &ptsx,
   ptsy.push_back(next_wp2[1]);
 
   // Shift car reference angle to 0 degrees
-  // NOTE: The heading angle is taken care off by the simulator based
+  // NOTE: The heading angle is taken care of by the simulator based
   //       on the path points generated
   for (int i = 0; i < ptsx.size(); i++)
   {
@@ -479,7 +477,7 @@ void CreateSpline(const vector<double> ptsx,
     next_y_vals.push_back(previous_path_y[i]);
   }
 
-  // Target 'x' position
+  // Target 'x' position(the way points are seperated by approximately 30m)
   double target_x = 30.0;
   // Get 'y' using the spline equation
   double target_y = s(target_x);
@@ -488,7 +486,7 @@ void CreateSpline(const vector<double> ptsx,
   double target_dist = sqrt((target_x) * (target_x) + (target_y) * (target_y));
   double x_add_on = 0;
 
-  // Populate 50 points for the car to follow using the spline
+  // Populate remaining 50 points for the car to follow using the spline
   for (int i = 1; i <= 50 - previous_path_x.size(); i++)
   {
     // The car speed if below reference velocity

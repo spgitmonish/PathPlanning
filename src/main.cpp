@@ -108,7 +108,7 @@ int main()
             // Get the last heading direction of the previous path
     				ref_yaw = atan2((ref_y-ref_y_prev), (ref_x - ref_x_prev));
 
-            // Get the next way point using the ego car's previous (x, y, yaw)
+            // Get the next way point using the ego car's (x, y, yaw)
     				next_wp = NextWaypoint(ref_x, ref_y, ref_yaw,
                                    map_waypoints_x, map_waypoints_y,
                                    map_waypoints_dx, map_waypoints_dy);
