@@ -280,11 +280,21 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
   //       difference of more than 2 way points
   if(change_lanes && ((next_wp - lane_change_wp) % map_waypoints_x.size() > 2))
   {
-    // Flag to track changed lanes
-    bool changed_lanes = false;
+    // Flag to track changed lanes(left and right)
+    bool left_lane_safe = false;
+    bool right_lane_safe = false;
 
-    // First try to change to left lane(if not in left lane already)
-    if(lane != 0 && !changed_lanes)
+    // Current lane before the algorithm changes the lane
+    int current_lane = lane;
+
+    // Values which stores the maximum distance in the left and right lanes
+    double closest_car_front_left = 100000;
+    double closest_car_back_left = 100000;
+    double closest_car_front_right = 100000;
+    double closest_car_back_right = 100000;
+
+    // First try to change to left lane(if not in left most lane already)
+    if(current_lane != 0)
     {
       // Default to true for safe lane change
       bool lane_safe = true;
@@ -306,16 +316,29 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
           double check_car_s = sensor_fusion[i][5];
 
           // Car's s position based on the speed
-          check_car_s+=((double)prev_size * .02 * check_speed);
+          check_car_s += ((double)prev_size * .02 * check_speed);
 
           // Distance between the cars
           double dist_s = check_car_s - car_s;
+
+          // Store the closest car's distance in this lane(front and back)
+          if((dist_s >= 0) && (dist_s < closest_car_front_left))
+          {
+            closest_car_front_left = dist_s;
+          }
+
+          if((dist_s < 0) && (abs(dist_s) < closest_car_back_left))
+          {
+            closest_car_back_left = abs(dist_s);
+          }
 
           // If the distance is less than the buffer of 20 then
           // lane change is not safe
           if(dist_s < 20 && dist_s > -20)
           {
             lane_safe = false;
+            closest_car_front_left = 100000;
+            closest_car_back_left = 100000;
           }
         }
       }
@@ -323,16 +346,12 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
       if(lane_safe)
       {
         // Safe to change to left lane!
-        changed_lanes = true;
-        // Change lane value
-        lane -= 1;
-        // For lane change detection in the next iteration
-        lane_change_wp = next_wp;
+        left_lane_safe = true;
       }
     }
 
-    // Try to change to right lane(if not in right lane already)
-    if(lane != 2 && !changed_lanes)
+    // Try to change to right lane(if not in right most lane already)
+    if(current_lane != 2)
     {
       // Default to true for safe for lane change
       bool lane_safe = true;
@@ -358,11 +377,24 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
           // Distance between the cars
           double dist_s = check_car_s - car_s;
 
+          // Store the closest car's distance in this lane(front and back)
+          if((dist_s >= 0) && (dist_s < closest_car_front_right))
+          {
+            closest_car_front_right = dist_s;
+          }
+
+          if((dist_s < 0) && (abs(dist_s) < closest_car_back_right))
+          {
+            closest_car_back_right = abs(dist_s);
+          }
+
           // If the distance is less than the buffer of 20 then
           // lane change is not safe
           if(dist_s < 20 && dist_s > -20)
           {
             lane_safe = false;
+            closest_car_front_right = 100000;
+            closest_car_back_right = 100000;
           }
         }
       }
@@ -370,11 +402,39 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
       if(lane_safe)
       {
         // Safe to change to right lane!
-        changed_lanes = true;
-        // Change lane value
-        lane += 1;
-        // For lane change detection in the next iteration
-        lane_change_wp = next_wp;
+        right_lane_safe = true;
+      }
+    }
+
+    // Change one lane at a time, so consider only the case where the car
+    // is in the center lane and has two options, left or right
+    if(left_lane_safe || right_lane_safe)
+    {
+      if(current_lane == 1)
+      {
+        // Making sure that both values are not equal to 100000 to ensure
+        // that both options are valid when in the center lane
+        if(left_lane_safe && right_lane_safe)
+        {
+          // Check if the left or right has the most gap
+          if((closest_car_front_left + closest_car_back_left) >
+             (closest_car_front_right + closest_car_back_right))
+          {
+            lane = 0;
+          }
+          else
+          {
+            lane = 2;
+          }
+        }
+        else if(left_lane_safe && !right_lane_safe)
+        {
+          lane = 0;
+        }
+        else
+        {
+          lane = 2;
+        }
       }
     }
   }
