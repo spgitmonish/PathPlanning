@@ -4,7 +4,7 @@
 A Path Planner's objective is to create a safe path for a self driving vehicle to follow. Path planning is comprised of the behavior planner taking in predictions of nearby cars, requesting a state change and generating a trajectory using the predictions. Path planning is done by the behavior control unit(green box) in the image below.
 
 <p align="center">
-   <img src="data/images/BehaviorControl.png">
+   <img src="data/images/BehaviorControl.jpg">
 </p>
 <p align="center">
    <i>Figure 1: Behavior Control</i>
@@ -16,7 +16,7 @@ Some components of the behavior control unit run at a higher frequency than othe
 The goal of this project is to create a trajectory for the car to follow in a simulated environment. The environment being a simulated track. Below is the image of the track(created from the way points data provided). 
 
 <p align="center">
-   <img src="data/images/Track.png">
+   <img src="data/images/Track.jpg">
 </p>
 <p align="center">
    <i>Figure 2: Track</i>
