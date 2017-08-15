@@ -94,7 +94,7 @@ The lane change(behavior planner) logic is simple, first I detect whether a lane
 `line 128 in main.cpp: ChangeLane(...)`
 
 ### Generate Way Points
-Along with two way points from the previous path, only three widely spaced Frenet points are used with dynamic d(based on the desired lane), and with s values spaced 30m for generating 3 more way points. This ensures that the car's projected path is nice and smooth and doesnt experience any max acceleration or jerk.
+Along with two way points from the previous path, only three widely spaced Frenet points are used with dynamic 'd'(based on the desired lane), and with 's' values spaced 30m for generating 3 more way points. This ensures that the car's projected path is nice and smooth and doesn't experience any max acceleration or jerk.
 
 `line 136 in main.cpp: GenerateWayPoints(...)`
 
