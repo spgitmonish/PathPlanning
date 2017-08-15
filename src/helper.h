@@ -436,6 +436,17 @@ void ChangeLane(const vector<vector<double>> sensor_fusion,
           lane = 2;
         }
       }
+      else
+      {
+        if(left_lane_safe && !right_lane_safe)
+        {
+          lane -= 1;
+        }
+        else
+        {
+          lane += 1;
+        }
+      }
     }
   }
 }
