@@ -43,7 +43,7 @@ string hasData(string s)
 
 double distance(double x1, double y1, double x2, double y2)
 {
-	return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+	return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
 // Function which returns the closest way point within the given map
@@ -124,7 +124,7 @@ vector<double> getFrenet(double x,
                          vector<double> maps_dy)
 {
   // Get the next way points
-	int next_wp = NextWaypoint(x,y, theta, maps_x,maps_y, maps_dx, maps_dy);
+	int next_wp = NextWaypoint(x,y, theta, maps_x, maps_y, maps_dx, maps_dy);
 
   // Previous way point
   int prev_wp;
@@ -137,8 +137,8 @@ vector<double> getFrenet(double x,
   }
 
   // Distance in x, y
-	double n_x = maps_x[next_wp]-maps_x[prev_wp];
-	double n_y = maps_y[next_wp]-maps_y[prev_wp];
+	double n_x = maps_x[next_wp] - maps_x[prev_wp];
+	double n_y = maps_y[next_wp] - maps_y[prev_wp];
   // Difference between current x,y and previous way point
 	double x_x = x - maps_x[prev_wp];
 	double x_y = y - maps_y[prev_wp];
@@ -149,13 +149,13 @@ vector<double> getFrenet(double x,
 	double proj_y = proj_norm * n_y;
 
   // Get frenet d
-	double frenet_d = distance(x_x,x_y,proj_x,proj_y);
+	double frenet_d = distance(x_x, x_y, proj_x, proj_y);
 
   // See if d value is positive or negative by comparing it to a center point
 	double center_x = 1000 - maps_x[prev_wp];
 	double center_y = 2000 - maps_y[prev_wp];
-	double centerToPos = distance(center_x,center_y,x_x,x_y);
-	double centerToRef = distance(center_x,center_y,proj_x,proj_y);
+	double centerToPos = distance(center_x, center_y, x_x, x_y);
+	double centerToRef = distance(center_x, center_y, proj_x, proj_y);
 
   // Adjust 'd' based on center reference
 	if(centerToPos <= centerToRef)
@@ -167,13 +167,13 @@ vector<double> getFrenet(double x,
 	double frenet_s = 0;
 	for(int i = 0; i < prev_wp; i++)
 	{
-		frenet_s += distance(maps_x[i],maps_y[i],maps_x[i+1],maps_y[i+1]);
+		frenet_s += distance(maps_x[i], maps_y[i], maps_x[i+1], maps_y[i+1]);
 	}
 
-	frenet_s += distance(0,0,proj_x,proj_y);
+	frenet_s += distance(0, 0, proj_x, proj_y);
 
   // Return the 's' and 'd' co-ordinates
-	return {frenet_s,frenet_d};
+	return {frenet_s, frenet_d};
 }
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
@@ -182,7 +182,7 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
   // Initialize previous way point to be -1
 	int prev_wp = -1;
 
-	while(s > maps_s[prev_wp+1] && (prev_wp < (int)(maps_s.size()-1) ))
+	while(s > maps_s[prev_wp + 1] && (prev_wp < (int)(maps_s.size() - 1)))
 	{
 		prev_wp++;
 	}
@@ -193,12 +193,12 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 
 	// The x,y,s along the segment
 	double seg_s = (s - maps_s[prev_wp]);
-	double seg_x = maps_x[prev_wp]+seg_s*cos(heading);
-	double seg_y = maps_y[prev_wp]+seg_s*sin(heading);
+	double seg_x = maps_x[prev_wp] + seg_s * cos(heading);
+	double seg_y = maps_y[prev_wp] + seg_s * sin(heading);
 
 	double perp_heading = heading - pi()/2;
-	double x = seg_x + d*cos(perp_heading);
-	double y = seg_y + d*sin(perp_heading);
+	double x = seg_x + d * cos(perp_heading);
+	double y = seg_y + d * sin(perp_heading);
 
 	return {x,y};
 }

@@ -10,10 +10,10 @@ A Path Planner's objective is to create a safe path for a self driving vehicle t
    <i>Figure 1: Behavior Control</i>
 </p>
 
-Some components of the behavior control unit run at a higher frequency than others as shown in the figure above. The output of the behavior control unit is a safe, feasible, legal and efficient trajectory. 
+Some components of the behavior control unit run at a higher frequency than others as shown in the figure above. The output of the behavior control unit is a safe, feasible, legal and efficient trajectory.
 
-##Project
-The goal of this project is to create a trajectory for the car to follow in a simulated environment. The environment being a simulated track. Below is the image of the track(created from the way points data provided). 
+## Project
+The goal of this project is to create a trajectory for the car to follow in a simulated environment. The environment being a simulated track. Below is the image of the track(created from the way points data provided).
 
 <p align="center">
    <img src="data/images/Track.jpg">
@@ -46,7 +46,7 @@ root
     |   spline.h
 ```
 
-The main logic is the helper functions in helper.h with main.cpp executing the functions and getting appropriately spaced points for the car in the simulator to follow. 
+The main logic is the helper functions in helper.h with main.cpp executing the functions and getting appropriately spaced points for the car in the simulator to follow.
 
 ### Dependencies
 
@@ -58,17 +58,17 @@ The main logic is the helper functions in helper.h with main.cpp executing the f
   * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
 * gcc/g++ >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
+  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 * [uWebSockets](https://github.com/uWebSockets/uWebSockets)
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
-    
+
 ### Basic Build Instructions
 
 1. Clone this repo.
@@ -83,7 +83,7 @@ The result of not using any interoplation and relying on the Frenet transformati
 
 In the end I used a combination of Frenet coordinate transformations along with spline interoplation for smooth trajectory generation. Using the spline from spline.h is greatly able to help smooth out the path planning path.
 
-> **NOTE:** 
+> **NOTE:**
 > This solution is heavily inspired by Udacity's working solution provided in their Q&A.
 
 ### Lane change(Behavior Planner)
@@ -104,8 +104,8 @@ The 5 anchor way points(in local vehicle coordinate space) was used to create a 
 `line 148 in main.cpp: CreateSpline(...)`
 
 ### Observed behavior
-If there wasnt any cars in front of the ego vehicle then the reference speed was 49.5 MPH(slightly under the speed limit). If there was a car in front the ego vehicle, the ego vehicle would slow down and change to the appropriate lane only when feasible. The car is successfully able to do a full lap without any collision and I was able to see no incidents reported for close to 37 minutes in one of the runs. 
- 
+If there wasnt any cars in front of the ego vehicle then the reference speed was 49.5 MPH(slightly under the speed limit). If there was a car in front the ego vehicle, the ego vehicle would slow down and change to the appropriate lane only when feasible. The car is successfully able to do a full lap without any collision and I was able to see no incidents reported for close to 37 minutes in one of the runs.
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab ([https://github.com/udacity/self-driving-car-sim/releases]()).
 
@@ -128,13 +128,13 @@ Here is the data provided from the Simulator to the C++ Program
 #### Previous path data given to the Planner
 
 > **NOTE**: Return the previous list but with processed points removed, can be a nice tool to show how far along
-the path has processed since last time. 
+the path has processed since last time.
 
 ["previous\_path\_x"] The previous list of x points previously given to the simulator
 
 ["previous\_path\_y"] The previous list of y points previously given to the simulator
 
-#### Previous path's end s and d values 
+#### Previous path's end s and d values
 
 ["end\_path\_s"] The previous list's last point's frenet s value
 
@@ -142,7 +142,7 @@ the path has processed since last time.
 
 #### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
 
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
+["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates.
 
 ## Details
 
@@ -151,6 +151,8 @@ the path has processed since last time.
 2. There will be some latency between the simulator running and the path planner returning a path, with optimized code usually its not very long maybe just 1-3 time steps. During this delay the simulator will continue using points that it was last given, because of this its a good idea to store the last points you have used so you can have a smooth transition. previous_path_x, and previous_path_y can be helpful for this transition since they show the last points given to the simulator controller with the processed points already removed. You would either return a path that extends this previous path or make sure to create a new path that has a smooth transition with this last path.
 
 ## Final thoughts
+Here is a link to the video of 2 laps of my path planner at work: [https://youtu.be/Fl7ybT17N_U](https://youtu.be/Fl7ybT17N_U)
+
 This is a simplistic path planner with plenty of room for improvement in the following areas.
 
 1. Behavior Planner: Have a ranking system to detect whether a lane switch or staying in the current lane is optimal
@@ -160,4 +162,3 @@ This is a simplistic path planner with plenty of room for improvement in the fol
 3. Better collision avoidance and detection
 
 4. Optimize path to minimize acceleration and jerk spikes even further
-
